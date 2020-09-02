@@ -1,0 +1,6 @@
+﻿{
+  "url": "https://www.netflix.com/login",
+  "localhostAddress": "localhost",
+  "chromeDebugPort": 9222,
+  "chromeExePath": "** set the full path of Chrome executable (with '.exe' extension) only in case it is not recognized **"
+}

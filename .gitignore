@@ -1,0 +1,10 @@
+# Visual Studio Code
+.vscode
+
+# Visual Studio
+.vs/
+
+# Temporary folders
+bin/
+obj/
+packages/
