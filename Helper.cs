@@ -66,7 +66,7 @@ namespace NFAuthenticationKey
                 chromeProcess.StartInfo.FileName = chromeExePath;
                 string userDataPath = Path.Combine(Directory.GetCurrentDirectory(), "BrowserTempData");
                 string htmlMessageFilePath = Path.Combine(Directory.GetCurrentDirectory(), "WaitingMessage.html");
-                chromeProcess.StartInfo.Arguments = String.Format("\"{0}\" -incognito --user-data-dir=\"{1}\" --remote-debugging-port={2}", htmlMessageFilePath, userDataPath, chromeDebugPort);
+                chromeProcess.StartInfo.Arguments = String.Format("\"{0}\" -incognito --user-data-dir=\"{1}\" --remote-debugging-port={2} --no-first-run --no-default-browser-check", htmlMessageFilePath, userDataPath, chromeDebugPort);
                 chromeProcess.Start();
                 return chromeProcess.Id;
             }
