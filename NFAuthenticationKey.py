@@ -199,9 +199,12 @@ def get_browser_path():
     if '*' not in BROWSER_PATH:
         return BROWSER_PATH
     for browser_name in ['google-chrome', 'google-chrome-stable', 'google-chrome-unstable', 'chromium']:
-        ret = subprocess.check_output(['whereis', browser_name]).decode('utf-8').split(' ')
-        if len(ret) > 1:
-            return ret[1]
+        try:
+            path = subprocess.check_output(['which', browser_name]).decode('utf-8').strip()
+            if path:
+                return path
+        except subprocess.CalledProcessError:
+            pass
     raise Warning('Chrome or Chronium browser not detected.\r\nTry check if it is installed or specify the path in the BROWSER_PATH field inside "NFAuthenticationKey.py" file')
 
 
