@@ -39,7 +39,7 @@ URL = 'https://www.netflix.com/login'
 
 class Main(object):
 
-    app_version = '1.0.0'
+    app_version = '1.0.1'
     _msg_id = 0
     _ws = None
 
