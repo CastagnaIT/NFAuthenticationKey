@@ -49,7 +49,7 @@ namespace NFAuthenticationKey
                 else
                 {
                     // Try use the default path
-                    path = Path.Combine(Environment.GetEnvironmentVariable("ProgramFiles(x86)"), @"Google\Chrome\Application\chrome.exe");
+                    path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Google\Chrome\Application\chrome.exe");
                 }
                 if (File.Exists(path) == false)
                     throw new Exception("The Chrome browser executable path has not been found.\r\nPlease specify it manually in the settings.json");
