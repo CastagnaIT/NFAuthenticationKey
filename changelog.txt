@@ -1,5 +1,9 @@
+v1.0.2.0 (2020-09-09)
+-Better recognize ProgramFiles path for x86
+-Add path example in settings.json
+
 v1.0.1.0 (2020-09-09)
-Add args --no-first-run --no-default-browser-check to Chrome execution
+-Add args --no-first-run --no-default-browser-check to Chrome execution
 
 v1.0.0.0 (2020-09-02)
 -First version
