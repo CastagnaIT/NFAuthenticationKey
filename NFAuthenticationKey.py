@@ -11,6 +11,7 @@ import random
 import shutil
 import socket
 import subprocess
+import sys
 import tempfile
 import time
 from datetime import datetime, timedelta
@@ -62,8 +63,6 @@ class Main(object):
             show_msg(str(exc), TextFormat.COL_LIGHT_RED)
             if browser_proc:
                 browser_proc.terminate()
-        except KeyboardInterrupt:
-            show_msg('\r\nOperations cancelled')
         except Exception as exc:
             show_msg('An error is occurred:\r\n' + str(exc), TextFormat.COL_LIGHT_RED)
             if browser_proc:
@@ -126,7 +125,7 @@ class Main(object):
                 endpoint = data[0]['webSocketDebuggerUrl']
                 self._ws = websocket.create_connection(endpoint)
                 return True
-            except (URLError, socket.timeout, json.JSONDecodeError, ValueError):
+            except (URLError, socket.timeout, ValueError):  # json.JSONDecodeError inherited ValueError and available from >= py3.5
                 pass
             except (IndexError, KeyError):
                 raise Warning('Could not extract debug URL from debugger service')
@@ -229,14 +228,15 @@ def save_data(data, pin):
 
 def show_msg(text, text_format=None):
     if text_format:
-        print(text_format + text + TextFormat.END)
-    else:
-        print(text)
+        text = text_format + text + TextFormat.END
+    print(text)
 
 
 def input_msg(text, text_format=None):
     if text_format:
-        return input(text_format + text + TextFormat.END)
+        text = text_format + text + TextFormat.END
+    if sys.version_info.major == 2:
+        return raw_input(text)
     else:
         return input(text)
 
@@ -245,6 +245,8 @@ if __name__ == '__main__':
     temp_path = tempfile.mkdtemp()
     try:
         Main(temp_path)
+    except KeyboardInterrupt:
+        show_msg('\r\nOperations cancelled')
     finally:
         try:
             shutil.rmtree(temp_path)
