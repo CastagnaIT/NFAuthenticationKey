@@ -23,11 +23,11 @@ except ImportError:  # Python 2
     from urllib2 import HTTPError, URLError, urlopen
 
 try:  # The crypto package depends on the package installed
-    from Crypto.Cipher import AES
-    from Crypto.Util import Padding
-except ImportError:
     from Cryptodome.Cipher import AES
     from Cryptodome.Util import Padding
+except ImportError:
+    from Crypto.Cipher import AES
+    from Crypto.Util import Padding
 
 
 # Script configuration
