@@ -7,6 +7,7 @@
 import base64
 import json
 import os
+import platform
 import random
 import shutil
 import socket
@@ -30,6 +31,7 @@ except ImportError:
     from Crypto.Cipher import AES
     from Crypto.Util import Padding
 
+IS_MACOS = platform.system().lower() == 'darwin'
 
 # Script configuration
 BROWSER_PATH = '* Remove me and specify here the browser path, only if not recognized *'
@@ -46,7 +48,7 @@ class Main(object):
 
     def __init__(self, browser_temp_path):
         show_msg('')
-        show_msg(TextFormat.BOLD + 'NFAuthentication Key for linux (Version {})'.format(self.app_version),
+        show_msg(TextFormat.BOLD + 'NFAuthentication Key for Linux/MacOS (Version {})'.format(self.app_version),
                  TextFormat.COL_LIGHT_BLUE)
         show_msg('')
         show_msg('Disclaimer:')
@@ -100,7 +102,7 @@ class Main(object):
         data = {
             'app_name': 'NFAuthenticationKey',
             'app_version': self.app_version,
-            'app_system': 'Linux',
+            'app_system': 'MacOS' if IS_MACOS else 'Linux',
             'app_author': 'CastagnaIT',
             'timestamp': int(((datetime.utcnow() + timedelta(days=5)) - datetime(year=1970, month=1, day=1)).total_seconds()),
             'data': {
@@ -197,14 +199,20 @@ def get_browser_path():
     """Check and return the name of the installed browser"""
     if '*' not in BROWSER_PATH:
         return BROWSER_PATH
-    for browser_name in ['google-chrome', 'google-chrome-stable', 'google-chrome-unstable', 'chromium']:
-        try:
-            path = subprocess.check_output(['which', browser_name]).decode('utf-8').strip()
-            if path:
+    if IS_MACOS:
+        for browser_name in ['Google Chrome', 'Chromium']:
+            path = '/Applications/' + browser_name + '.app/Contents/MacOS/' + browser_name
+            if os.path.exists(path):
                 return path
-        except subprocess.CalledProcessError:
-            pass
-    raise Warning('Chrome or Chronium browser not detected.\r\nTry check if it is installed or specify the path in the BROWSER_PATH field inside "NFAuthenticationKey.py" file')
+    else:
+        for browser_name in ['google-chrome', 'google-chrome-stable', 'google-chrome-unstable', 'chromium']:
+            try:
+                path = subprocess.check_output(['which', browser_name]).decode('utf-8').strip()
+                if path:
+                    return path
+            except subprocess.CalledProcessError:
+                pass
+    raise Warning('Chrome or Chromium browser not detected.\r\nTry check if it is installed or specify the path in the BROWSER_PATH field inside "NFAuthenticationKey.py" file')
 
 
 def assert_cookies(cookies):
