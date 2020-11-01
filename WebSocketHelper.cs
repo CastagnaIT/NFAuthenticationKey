@@ -48,7 +48,7 @@ namespace NFAuthenticationKey
                 }
                 catch (Exception)
                 {
-                    throw new Exception("Could not extract debug URL from debugger service");
+                    throw new NFAuthException("Could not extract debug URL from debugger service");
                 }
             }
         }

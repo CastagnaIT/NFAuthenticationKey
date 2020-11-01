@@ -116,6 +116,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="GuidHelper.cs" />
+    <Compile Include="NFAuthException.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="WebSocketHelper.cs" />
     <Page Include="MainWindow.xaml">

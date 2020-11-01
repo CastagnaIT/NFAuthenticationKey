@@ -43,9 +43,30 @@ namespace NFAuthenticationKey
                 Helper.localhostAddress = settings["localhostAddress"].ToString();
                 Helper.chromeDebugPort = settings["chromeDebugPort"].ToObject<int>();
             }
-            catch (Exception exc)
+            catch (Newtonsoft.Json.JsonReaderException exc)
+            {
+                if (exc.Message.Contains("escape sequence") && exc.Message.Contains("chromeExePath")) {
+                    MessageBox.Show(this,
+                        "The path set to chromeExePath property in the settings.json file has not been formatted correctly." + Environment.NewLine +
+                        "It must be formatted as the following example:" + Environment.NewLine +
+                        "C:\\\\mypath\\\\chrome.exe",
+                        this.Title);
+                    Close();
+                }
+                else
+                {
+                    MessageBox.Show(this, exc.Message + Environment.NewLine + Environment.NewLine + exc.ToString(), this.Title);
+                    Close();
+                }
+            }
+            catch (NFAuthException exc)
             {
                 MessageBox.Show(this, exc.Message, this.Title);
+                Close();
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(this, exc.Message + Environment.NewLine + Environment.NewLine + exc.ToString(), this.Title);
                 Close();
             }
         }
@@ -103,7 +124,7 @@ namespace NFAuthenticationKey
                 // Wait for chrome opening and remote debugging service start-up
                 UpdateStatus("Establish connection with Chrome... please wait");
                 if (WebSocketHelper.WaitForPortOpened() == false)
-                    throw new Exception(string.Format("Unable communicate with Chrome debug address {0}:{1}", Helper.localhostAddress, Helper.chromeDebugPort));
+                    throw new NFAuthException(string.Format("Unable communicate with Chrome debug address {0}:{1}", Helper.localhostAddress, Helper.chromeDebugPort));
 
                 // Get endpoint of current tab
                 WebSocketHelper.ExtractDebugEndpoint();
@@ -118,13 +139,13 @@ namespace NFAuthenticationKey
                 // Wait for the user to login 
                 UpdateStatus("Please login in to website now ...waiting for you to finish...");
                 if (Helper.WaitUserLoggedin() == false)
-                    throw new Exception("You have exceeded the time available for the login. Restart the operations.");
+                    throw new NFAuthException("You have exceeded the time available for the login. Restart the operations.");
 
                 // Verify that falcorCache data exist, this data exist only when logged
                 UpdateStatus("Verification of data in progress... please wait");
                 string htmlPage = WebSocketHelper.WSRequest("Runtime.evaluate", "{'expression': 'document.documentElement.outerHTML'}")["result"]["result"]["value"].ToString();
                 if (htmlPage.Contains("falcorCache") == false)
-                    throw new Exception("Possible wrong login or unexpected problem, please try again.");
+                    throw new NFAuthException("Possible wrong login or unexpected problem, please try again.");
 
                 UpdateStatus("File creation in progress... please wait");
 
@@ -145,7 +166,7 @@ namespace NFAuthenticationKey
                 data["app_author"] = "CastagnaIT";
                 data["timestamp"] = (int)DateTime.UtcNow.AddDays(5).Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
                 data["data"] = data_content;
-                
+
                 // Save the "NFAuthentication.key" file
                 Helper.SaveData(data, pin);
 
@@ -155,20 +176,32 @@ namespace NFAuthenticationKey
                 string strMessage = "Operations completed!\r\nThe 'NFAuthentication.key' file has been saved in current folder.\r\nYour PIN protection is: " + pin;
                 UpdateStatus(strMessage);
 
-                Dispatcher.BeginInvoke(new Action(() => 
+                Dispatcher.BeginInvoke(new Action(() =>
                 {
                     BtnCancel.IsEnabled = false;
                     BtnStart.IsEnabled = true;
-                    MessageBox.Show(this, strMessage, this.Title); 
+                    MessageBox.Show(this, strMessage, this.Title);
                 }), DispatcherPriority.Background);
             }
             catch (ThreadAbortException)
             {
                 Helper.TerminateChromeInstance(chromePid);
             }
-            catch (Exception exc)
+            catch (NFAuthException exc)
             {
                 UpdateStatus(exc.Message);
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    BtnCancel.IsEnabled = false;
+                    BtnStart.IsEnabled = true;
+                    MessageBox.Show(this, exc.Message, this.Title);
+                }), DispatcherPriority.Background);
+
+                Helper.TerminateChromeInstance(chromePid);
+            }
+            catch (Exception exc)
+            {
+                UpdateStatus(exc.Message + Environment.NewLine + Environment.NewLine + exc.ToString());
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
                     BtnCancel.IsEnabled = false;

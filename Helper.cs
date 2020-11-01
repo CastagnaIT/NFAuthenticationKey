@@ -36,7 +36,7 @@ namespace NFAuthenticationKey
             {
                 path = chromeCustomPath;
                 if (File.Exists(path) == false)
-                    throw new Exception("The Chrome browser executable path in the settings.json is wrong");
+                    throw new NFAuthException("The Chrome browser executable path in the settings.json is wrong");
             }
             else
             {
@@ -52,7 +52,7 @@ namespace NFAuthenticationKey
                     path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Google\Chrome\Application\chrome.exe");
                 }
                 if (File.Exists(path) == false)
-                    throw new Exception("The Chrome browser executable path has not been found.\r\nPlease specify it manually in the settings.json");
+                    throw new NFAuthException("The Chrome browser executable path has not been found.\r\nPlease specify it manually in the settings.json");
             }
             return path;
         }
@@ -129,13 +129,13 @@ namespace NFAuthenticationKey
         public static void AssertCookies(JArray cookies)
         {
             if (cookies.Count == 0)
-                throw new Exception("Not found cookies");
+                throw new NFAuthException("Not found cookies");
 
             List<string> loginCookies = new List<string> { "memclid", "nfvdid", "SecureNetflixId", "NetflixId" };
             foreach (string cookieName in loginCookies)
             {
                 if (cookies.Children<JObject>().FirstOrDefault(o => o["name"].ToString() == cookieName) == null)
-                    throw new Exception("Not found cookies");
+                    throw new NFAuthException("Not found cookies");
             };
         }
 
