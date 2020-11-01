@@ -74,7 +74,7 @@ namespace NFAuthenticationKey
         private void BtnStart_Click(object sender, RoutedEventArgs e)
         {
             // Ask to user to close all Chrome windows
-            if (Helper.IsChromeOpened())
+            if (Helper.IsChromeOpened(true))
             {
                 MessageBox.Show(this, "Please close all Chrome windows opened", this.Title);
                 return;

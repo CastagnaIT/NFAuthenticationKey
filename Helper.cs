@@ -74,7 +74,20 @@ namespace NFAuthenticationKey
 
         public static bool IsChromeOpened()
         {
-            return Process.GetProcessesByName("chrome").Length > 0;
+            return IsChromeOpened(false);
+        }
+
+        public static bool IsChromeOpened(bool checkOnlyWithWindows)
+        {
+            if (checkOnlyWithWindows)
+            {
+                Process[] processes = Process.GetProcessesByName("chrome");
+                return processes.Count(process => string.IsNullOrEmpty(process.MainWindowTitle) == false) > 0;
+            }
+            else
+            {
+                return Process.GetProcessesByName("chrome").Length > 0;
+            }
         }
 
         public static bool TerminateAllChromeInstances()
