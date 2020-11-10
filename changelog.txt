@@ -1,3 +1,7 @@
+v1.0.3.0 (2020-11-10)
+-At the first check try check only Chrome windows opened without hidden processes
+-Improved exceptions
+
 v1.0.2.0 (2020-09-09)
 -Better recognize ProgramFiles path for x86
 -Add path example in settings.json
