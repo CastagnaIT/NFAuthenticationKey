@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -126,8 +127,10 @@ namespace NFAuthenticationKey
                 if (WebSocketHelper.WaitForPortOpened() == false)
                     throw new NFAuthException(string.Format("Unable communicate with Chrome debug address {0}:{1}", Helper.localhostAddress, Helper.chromeDebugPort));
 
-                // Get endpoint of current tab
+                // Get endpoint of our page
                 WebSocketHelper.ExtractDebugEndpoint();
+
+                WebSocketHelper.OpenWebsocket();
                 WebSocketHelper.WSRequest("Network.enable");
                 WebSocketHelper.WSRequest("Page.enable");
 
@@ -136,16 +139,22 @@ namespace NFAuthenticationKey
                 WebSocketHelper.WSRequest("Page.navigate", "{'url': '" + Helper.url + "'}");
                 //string frameId = WebSocketHelper.WSRequest("Page.navigate", "{'url': '" + Helper.url + "'}")["result"]["frameId"].ToString();
 
+                WebSocketHelper.WSWaitEvent("Page.domContentEventFired");  // Wait loading DOM (document.onDOMContentLoaded event)
+
                 // Wait for the user to login 
                 UpdateStatus("Please login in to website now ...waiting for you to finish...");
                 if (Helper.WaitUserLoggedin() == false)
                     throw new NFAuthException("You have exceeded the time available for the login. Restart the operations.");
+
+                WebSocketHelper.WSWaitEvent("Page.domContentEventFired");  // Wait loading DOM (document.onDOMContentLoaded event)
 
                 // Verify that falcorCache data exist, this data exist only when logged
                 UpdateStatus("Verification of data in progress... please wait");
                 string htmlPage = WebSocketHelper.WSRequest("Runtime.evaluate", "{'expression': 'document.documentElement.outerHTML'}")["result"]["result"]["value"].ToString();
                 if (htmlPage.Contains("falcorCache") == false)
                     throw new NFAuthException("Possible wrong login or unexpected problem, please try again.");
+
+                WebSocketHelper.WSWaitEvent("Page.loadEventFired");  // Wait loading page (window.onload event)
 
                 UpdateStatus("File creation in progress... please wait");
 
@@ -210,6 +219,10 @@ namespace NFAuthenticationKey
                 }), DispatcherPriority.Background);
 
                 Helper.TerminateChromeInstance(chromePid);
+            }
+            finally
+            {
+                WebSocketHelper.CloseWebsocket();
             }
         }
 
