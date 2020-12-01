@@ -38,18 +38,32 @@ namespace NFAuthenticationKey
 
         public static void ExtractDebugEndpoint()
         {
-            using (var webClient = new WebClient())
+            try
             {
-                string response = webClient.DownloadString(String.Format("http://{0}:{1}/json", Helper.localhostAddress, Helper.chromeDebugPort)).Replace("\r\n","");
-                try
+                chromeDebugEndpoint = "";
+                HttpWebRequest webReq = (HttpWebRequest)WebRequest.Create(string.Format("http://{0}:{1}/json", Helper.localhostAddress, Helper.chromeDebugPort));
+                var responseStream = webReq.GetResponse().GetResponseStream();
+                StreamReader sr = new StreamReader(responseStream);
+                var response = sr.ReadToEnd();
+
+                JArray sessionsList = JArray.Parse(response);
+                foreach (var item in sessionsList)
                 {
-                    chromeDebugEndpoint = JArray.Parse(response)[0]["webSocketDebuggerUrl"].ToString();
-                    Console.WriteLine("CHROME WEB SOCKET ENDPOINT: " + chromeDebugEndpoint);
+                    // Find our session page
+                    if (item["type"].ToString() == "page" && item["url"].ToString().Contains("WaitingMessage.html"))
+                    {
+                        chromeDebugEndpoint = item["webSocketDebuggerUrl"].ToString();
+                        Debug.WriteLine("CHROME SESSION: " + item.ToString());
+                        break;
+                    }
                 }
-                catch (Exception)
-                {
-                    throw new NFAuthException("Could not extract debug URL from debugger service");
-                }
+
+                if (chromeDebugEndpoint == "")
+                    throw new NFAuthException("Chrome session page not found");
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
