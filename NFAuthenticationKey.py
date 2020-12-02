@@ -120,17 +120,20 @@ class Main(object):
         start_time = time.time()
         while time.time() - start_time < 15:
             try:
-                data = urlopen('http://{0}:{1}/json'.format(LOCALHOST_ADDRESS, DEBUG_PORT), timeout=0.5).read().decode()
-                data = json.loads(data)
+                endpoint = ''
+                data = urlopen('http://{0}:{1}/json'.format(LOCALHOST_ADDRESS, DEBUG_PORT), timeout=1).read().decode()
                 if not data:
                     raise ValueError
-                endpoint = data[0]['webSocketDebuggerUrl']
+                session_list = json.loads(data)
+                for item in session_list:
+                    if item['type'] == 'page':
+                        endpoint = item['webSocketDebuggerUrl']
+                if not endpoint:
+                    raise Warning('Chrome session page not found')
                 self._ws = websocket.create_connection(endpoint)
-                return True
+                return
             except (URLError, socket.timeout, ValueError):  # json.JSONDecodeError inherited ValueError and available from >= py3.5
                 pass
-            except (IndexError, KeyError):
-                raise Warning('Could not extract debug URL from debugger service')
         raise Warning('Unable to connect with the browser')
 
     def wait_user_logged(self):
