@@ -1,3 +1,8 @@
+v1.1.0 (2020-12-02)
+-Fixed possible wrong session page endpoint that can prevent loading website page
+-Fixed possible problem with arguments on some systems
+-Added wait events for full page loading
+
 v1.0.3 (2020-10-27)
 -Add support for MacOS
 
