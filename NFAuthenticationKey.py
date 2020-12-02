@@ -83,15 +83,23 @@ class Main(object):
         self.ws_request('Page.enable')
         show_msg('Opening login webpage... please wait')
         self.ws_request('Page.navigate', {'url': URL})
+
+        self.ws_wait_event('Page.domContentEventFired')  # Wait loading DOM (document.onDOMContentLoaded event)
+
         show_msg('Please login in to website now ...waiting for you to finish...', TextFormat.COL_LIGHT_BLUE)
         if not self.wait_user_logged():
             raise Warning('You have exceeded the time available for the login. Restart the operations.')
+
+        self.ws_wait_event('Page.domContentEventFired')  # Wait loading DOM (document.onDOMContentLoaded event)
+
         # Verify that falcorCache data exist, this data exist only when logged
         show_msg('Verification of data in progress... please wait')
-        time.sleep(1)  # Give time to have the full html page
         html_page = self.ws_request('Runtime.evaluate', {'expression': 'document.documentElement.outerHTML'})['result']['value']
         if 'falcorCache' not in html_page:
             raise Warning('Possible wrong login or unexpected problem, please try again.')
+
+        self.ws_wait_event('Page.loadEventFired')  # Wait loading page (window.onload event)
+
         show_msg('File creation in progress... please wait')
         # Get all cookies
         cookies = self.ws_request('Network.getAllCookies').get('cookies', [])
@@ -168,6 +176,17 @@ class Main(object):
             if 'result' in parsed_message and parsed_message['id'] == req_id:
                 return parsed_message['result']
         raise Warning('No data received from browser')
+
+    def ws_wait_event(self, method):
+        start_time = time.time()
+        while True:
+            if time.time() - start_time > 10:
+                break
+            message = self._ws.recv()
+            parsed_message = json.loads(message)
+            if 'method' in parsed_message and parsed_message['method'] == method:
+                return parsed_message
+        raise Warning('No event data received from browser')
 
 
 # Helper methods
