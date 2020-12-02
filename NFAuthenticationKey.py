@@ -159,17 +159,15 @@ class Main(object):
         req_id = self.msg_id
         message = json.dumps({'id': req_id, 'method': method, 'params': params or {}})
         self._ws.send(message)
-        messages = []
         start_time = time.time()
         while True:
             if time.time() - start_time > 10:
                 break
             message = self._ws.recv()
             parsed_message = json.loads(message)
-            messages.append(parsed_message)
             if 'result' in parsed_message and parsed_message['id'] == req_id:
                 return parsed_message['result']
-        raise Warning('No data received from Chrome')
+        raise Warning('No data received from browser')
 
 
 # Helper methods
