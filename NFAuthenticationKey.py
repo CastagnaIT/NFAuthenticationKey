@@ -129,7 +129,7 @@ class Main(object):
         while time.time() - start_time < 15:
             try:
                 endpoint = ''
-                data = urlopen('http://{0}:{1}/json'.format(LOCALHOST_ADDRESS, DEBUG_PORT), timeout=1).read().decode()
+                data = urlopen('http://{0}:{1}/json'.format(LOCALHOST_ADDRESS, DEBUG_PORT), timeout=1).read().decode('utf-8')
                 if not data:
                     raise ValueError
                 session_list = json.loads(data)
