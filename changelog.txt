@@ -1,3 +1,6 @@
+v1.1.1 (2020-12-04)
+-Fixed problems with script execution on systems with different default encoding
+
 v1.1.0 (2020-12-02)
 -Fixed possible wrong session page endpoint that can prevent loading website page
 -Fixed possible problem with arguments on some systems
