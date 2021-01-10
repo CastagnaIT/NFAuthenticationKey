@@ -227,7 +227,7 @@ def get_browser_path():
             if os.path.exists(path):
                 return path
     else:
-        for browser_name in ['google-chrome', 'google-chrome-stable', 'google-chrome-unstable', 'chromium']:
+        for browser_name in ['google-chrome', 'google-chrome-stable', 'google-chrome-unstable', 'chromium', 'chromium-browser']:
             try:
                 path = subprocess.check_output(['which', browser_name]).decode('utf-8').strip()
                 if path:
