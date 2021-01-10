@@ -67,6 +67,8 @@ class Main(object):
                 browser_proc.terminate()
         except Exception as exc:
             show_msg('An error is occurred:\r\n' + str(exc), TextFormat.COL_LIGHT_RED)
+            import traceback
+            show_msg(traceback.format_exc())
             if browser_proc:
                 browser_proc.terminate()
         finally:
