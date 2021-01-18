@@ -58,7 +58,6 @@ class Main(object):
         browser_proc = None
         try:
             input_msg('Press "ENTER" key to accept the disclaimer and start, or "CTRL+C" to cancel', TextFormat.BOLD)
-            show_msg('Browser startup... please wait')
             browser_proc = open_browser(browser_temp_path)
             self.operations()
         except Warning as exc:
@@ -212,7 +211,9 @@ def open_browser(browser_temp_path):
               '--no-default-browser-check']
     dev_null = open(os.devnull, 'wb')
     try:
-        return subprocess.Popen([get_browser_path()] + params, stdout=dev_null, stderr=subprocess.STDOUT)
+        browser_path = get_browser_path()
+        show_msg('Browser startup... ({}) please wait'.format(browser_path))
+        return subprocess.Popen([browser_path] + params, stdout=dev_null, stderr=subprocess.STDOUT)
     finally:
         dev_null.close()
 
@@ -222,19 +223,19 @@ def get_browser_path():
     if '*' not in BROWSER_PATH:
         return BROWSER_PATH
     if IS_MACOS:
-        for browser_name in ['Google Chrome', 'Chromium']:
+        for browser_name in ['Google Chrome', 'Chromium', 'Brave Browser']:
             path = '/Applications/' + browser_name + '.app/Contents/MacOS/' + browser_name
             if os.path.exists(path):
                 return path
     else:
-        for browser_name in ['google-chrome', 'google-chrome-stable', 'google-chrome-unstable', 'chromium', 'chromium-browser']:
+        for browser_name in ['google-chrome', 'google-chrome-stable', 'google-chrome-unstable', 'chromium', 'chromium-browser', 'brave-browser']:
             try:
                 path = subprocess.check_output(['which', browser_name]).decode('utf-8').strip()
                 if path:
                     return path
             except subprocess.CalledProcessError:
                 pass
-    raise Warning('Chrome or Chromium browser not detected.\r\nTry check if it is installed or specify the path in the BROWSER_PATH field inside "NFAuthenticationKey.py" file')
+    raise Warning('Browser not detected.\r\nTry check if it is installed or specify the path in the BROWSER_PATH field inside "NFAuthenticationKey.py" file')
 
 
 def assert_cookies(cookies):
