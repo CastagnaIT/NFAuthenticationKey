@@ -1,26 +1,29 @@
+v1.1.4 (2021-04-20)
+- Add check for account membership status
+
 v1.1.3 (2021-01-18)
--Add support for Brave browser
+- Add support for Brave browser
 
 v1.1.2 (2021-01-10)
--Add 'chromium-browser' executable name
+- Add 'chromium-browser' executable name
 
 v1.1.1 (2020-12-04)
--Fixed problems with script execution on systems with different default encoding
+- Fixed problems with script execution on systems with different default encoding
 
 v1.1.0 (2020-12-02)
--Fixed possible wrong session page endpoint that can prevent loading website page
--Fixed possible problem with arguments on some systems
--Added wait events for full page loading
+- Fixed possible wrong session page endpoint that can prevent loading website page
+- Fixed possible problem with arguments on some systems
+- Added wait events for full page loading
 
 v1.0.3 (2020-10-27)
--Add support for MacOS
+- Add support for MacOS
 
 v1.0.2 (2020-09-02)
--Fixed compatibility with Python 2
--Minor changes
+- Fixed compatibility with Python 2
+- Minor changes
 
 v1.0.1 (2020-09-12)
--Replaced "whereis" with "which" command
+- Replaced "whereis" with "which" command
 
 v1.0.0 (2020-09-09)
--First version
+- First version
