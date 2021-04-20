@@ -160,7 +160,11 @@ namespace NFAuthenticationKey
                 UpdateStatus("File creation in progress... please wait");
 
                 // Get all cookies
-                JArray cookies = WebSocketHelper.WSRequest("Network.getAllCookies")["result"]["cookies"].ToObject<JArray>();
+                JObject JOCookies = WebSocketHelper.WSRequest("Network.getAllCookies");
+                if (JOCookies == null)
+                    throw new NFAuthException("WebSocket response for Cookies not received");
+
+                JArray cookies = JOCookies["result"]["cookies"].ToObject<JArray>();
                 Helper.AssertCookies(cookies);
 
                 // Generate a random PIN for access to "NFAuthentication.key" file
