@@ -118,6 +118,13 @@ namespace NFAuthenticationKey
             }
         }
 
+        /// <summary>
+        /// Make a WebSocket Json request
+        /// </summary>
+        /// <param name="method">Method to call</param>
+        /// <param name="parameters">Parameters for the method (optional)</param>
+        /// <param name="timeoutSecs">Timeout in seconds (optional)</param>
+        /// <returns>Json data or null if no data has been received</returns>
         public static JObject WSRequest(string method, string parameters = "{}", int timeoutSecs = 10)
         {
             int id = msgId;
