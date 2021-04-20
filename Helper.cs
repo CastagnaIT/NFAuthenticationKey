@@ -128,12 +128,15 @@ namespace NFAuthenticationKey
             Stopwatch SW = Stopwatch.StartNew();
             while (SW.Elapsed < maxDuration)
             {
-                JObject historyData = WebSocketHelper.WSRequest("Page.getNavigationHistory");
-                int historyIndex = historyData["result"]["currentIndex"].ToObject<int>();
+                JObject historyData = WebSocketHelper.WSRequest("Page.getNavigationHistory", "{}", 5);
+                if (historyData != null)
+                {
+                    int historyIndex = historyData["result"]["currentIndex"].ToObject<int>();
 
-                // If the current page url is like "https://www.n*****x.com/browse" means that the user should have logged in successfully
-                if (historyData["result"]["entries"][historyIndex]["url"].ToString().Contains("/browse"))
-                    return true;
+                    // If the current page url is like "https://www.n*****x.com/browse" means that the user should have logged in successfully
+                    if (historyData["result"]["entries"][historyIndex]["url"].ToString().Contains("/browse"))
+                        return true;
+                }
                 Thread.Sleep(500);
             }
             return false;
