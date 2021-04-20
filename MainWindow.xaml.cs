@@ -152,8 +152,28 @@ namespace NFAuthenticationKey
                 // Verify that falcorCache data exist, this data exist only when logged
                 UpdateStatus("Verification of data in progress... please wait");
                 string htmlPage = WebSocketHelper.WSRequest("Runtime.evaluate", "{'expression': 'document.documentElement.outerHTML'}")["result"]["result"]["value"].ToString();
-                if (htmlPage.Contains("falcorCache") == false)
-                    throw new NFAuthException("Possible wrong login or unexpected problem, please try again.");
+
+                if (string.IsNullOrEmpty(htmlPage))
+                    throw new NFAuthException("An unexpected problem has occurred, please try again.");
+
+                JObject reactContext = Helper.ExtractJson(htmlPage, "reactContext");
+                if (reactContext == null)
+                {
+                    // An error is happened in the reactContext extraction? try go on
+                    UpdateStatus("Error failed to check account membership status, try a simple check");
+                    if (htmlPage.Contains("falcorCache") == false)
+                        throw new NFAuthException("Error unable to find falcorCache data.");
+                }
+                else
+                {
+                    // Check the membership status
+                    string membershipStatus = reactContext["models"]["userInfo"]["data"]["membershipStatus"].ToString();
+                    if (membershipStatus != "CURRENT_MEMBER")
+                    {
+                        UpdateStatus("The account membership status is: " + membershipStatus);
+                        throw new NFAuthException("Your login can not be used. The possible causes are account not confirmed/renewed/reactivacted.");
+                    }
+                }
 
                 WebSocketHelper.WSWaitEvent("Page.loadEventFired");  // Wait loading page (window.onload event)
 

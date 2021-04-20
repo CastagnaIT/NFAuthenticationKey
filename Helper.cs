@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace NFAuthenticationKey
@@ -172,6 +174,35 @@ namespace NFAuthenticationKey
                 {
                     return reader.ReadToEnd();
                 }
+            }
+        }
+
+        public static JObject ExtractJson(string content, string varName)
+        {
+            try
+            {
+                string pattern = @"netflix\.{}\s*=\s*(.*?);\s*</script>";
+                var match = Regex.Match(content, pattern.Replace("{}", varName));
+                if (match.Success)
+                {
+                    string jsonString = match.Groups[1].Value;
+
+                    jsonString = jsonString.Replace("\\\"", "\\\\\""); // Escape \"
+                    jsonString = jsonString.Replace(@"\s", @"\\s"); // Escape whitespace
+                    jsonString = jsonString.Replace(@"\r", @"\\r"); // Escape return
+                    jsonString = jsonString.Replace(@"\n", @"\\n"); // Escape line feed
+                    jsonString = jsonString.Replace(@"\t", @"\\t"); // Escape tab
+
+                    jsonString = Regex.Unescape(jsonString); // Unescape unicode string
+
+                    return JsonConvert.DeserializeObject<JObject>(jsonString);
+                }
+                return null;
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine(string.Format("ExtractJson error {0} Unable to extract {1} data", exc, varName));
+                return null;
             }
         }
 
