@@ -1,17 +1,23 @@
+v1.2.0.0
+- Add check for account membership status
+- The "Current status" is now a text control to better check problems
+- Handled WSRequest timeout to Page.getNavigationHistory
+- Add check to verify no cookies in response due to timeout
+
 v1.1.0.0
--Improved websocket management
--Added wait events for full page loading 
+- Improved websocket management
+- Added wait events for full page loading 
 
 v1.0.3.0 (2020-11-10)
--At the first check try check only Chrome windows opened without hidden processes
--Improved exceptions
+- At the first check try check only Chrome windows opened without hidden processes
+- Improved exceptions
 
 v1.0.2.0 (2020-09-09)
--Better recognize ProgramFiles path for x86
--Add path example in settings.json
+- Better recognize ProgramFiles path for x86
+- Add path example in settings.json
 
 v1.0.1.0 (2020-09-09)
--Add args --no-first-run --no-default-browser-check to Chrome execution
+- Add args --no-first-run --no-default-browser-check to Chrome execution
 
 v1.0.0.0 (2020-09-02)
--First version
+- First version
