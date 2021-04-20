@@ -13,13 +13,15 @@
         </Grid.ColumnDefinitions>
         <Rectangle Grid.ColumnSpan="2" Height="90" Margin="0,0,0,23" VerticalAlignment="Bottom" Fill="#FFF4F4F5"/>
 
-        <Button x:Name="BtnStart" Content="Start" HorizontalAlignment="Left" Height="25" Margin="24,274,0,0" VerticalAlignment="Top" Width="150" Grid.ColumnSpan="2" Click="BtnStart_Click" IsDefault="True"/>
-        <TextBlock Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="24,307,0,0" TextWrapping="Wrap" Text="Info: The authentication key file created &quot;NFAuthentication.key&quot; will expire after 5 day." VerticalAlignment="Top" Foreground="Red"/>
-        <Button x:Name="BtnClose" Content="Close" HorizontalAlignment="Right" Height="25" Margin="0,274,22,0" VerticalAlignment="Top" Width="150" Grid.Column="1" IsCancel="True" Click="BtnClose_Click"/>
-        <Button x:Name="BtnCancel" Content="Cancel" HorizontalAlignment="Left" Height="25" Margin="179,274,0,0" VerticalAlignment="Top" Width="150" Grid.ColumnSpan="2" Click="BtnCancel_Click" IsEnabled="False"/>
+        <Button x:Name="BtnStart" Content="Start" HorizontalAlignment="Left" Height="25" Margin="24,278,0,0" VerticalAlignment="Top" Width="150" Grid.ColumnSpan="2" Click="BtnStart_Click" IsDefault="True"/>
+        <TextBlock Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="24,311,0,0" TextWrapping="Wrap" Text="Info: The authentication key file created &quot;NFAuthentication.key&quot; will expire after 5 day." VerticalAlignment="Top" Foreground="Red"/>
+        <Button x:Name="BtnClose" Content="Close" HorizontalAlignment="Right" Height="25" Margin="0,278,22,0" VerticalAlignment="Top" Width="150" Grid.Column="1" IsCancel="True" Click="BtnClose_Click"/>
+        <Button x:Name="BtnCancel" Content="Cancel" HorizontalAlignment="Left" Height="25" Margin="179,278,0,0" VerticalAlignment="Top" Width="150" Grid.ColumnSpan="2" Click="BtnCancel_Click" IsEnabled="False"/>
         <Rectangle Grid.ColumnSpan="2" Fill="#FFF4F4F5" Height="94" Margin="0,87,0,0" VerticalAlignment="Top"/>
         <TextBox Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="24,87,0,0" TextWrapping="Wrap" Text="Instructions" VerticalAlignment="Top" Background="{x:Null}" Foreground="Red" FontWeight="Bold" FontStyle="Italic" FontSize="14" BorderBrush="{x:Null}"/>
-        <TextBlock HorizontalAlignment="Left" Margin="35,115,0,0" TextWrapping="Wrap" Text="1) Press Start button and WAIT until Chrome will be opened and login webpage will be full loaded." VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+        <TextBlock HorizontalAlignment="Left" Margin="35,115,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Grid.ColumnSpan="2">
+            1) Press Start button and <Bold>wait</Bold> until Chrome will be opened and login webpage will be full loaded.
+        </TextBlock>
         <TextBlock HorizontalAlignment="Left" Margin="35,136,0,0" TextWrapping="Wrap" Text="2) Login in to your account." VerticalAlignment="Top" Grid.ColumnSpan="2" Height="16"/>
         <TextBlock HorizontalAlignment="Left" Margin="35,157,0,0" TextWrapping="Wrap" Text="3) Now wait for the data processing to finish, Chrome will be closed automatically." VerticalAlignment="Top" Grid.ColumnSpan="2"/>
         <TextBlock Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="23,10,0,0" TextWrapping="Wrap" Text="NF Authentication key" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Foreground="Red"/>
@@ -28,10 +30,20 @@
             Disclaimer: The Software and source code available on GitHub are provided &quot;as is&quot; without warranty of any kind, either express or implied. Use at your own risk.<LineBreak/>
             The use of the software is done at your own discretion and risk with the agreement that you will be solely responsible for any damage resulting from such activities and you are solely responsible for adequate data protection.
         </TextBlock>
-        <Rectangle Grid.ColumnSpan="2" Fill="#FFF4F4F5" Height="80" Margin="0,185,0,0" VerticalAlignment="Top"/>
+        <Rectangle Grid.ColumnSpan="2" Fill="#FFF4F4F5" Height="85" Margin="0,185,0,0" VerticalAlignment="Top"/>
         <TextBox Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="24,185,0,0" TextWrapping="Wrap" Text="Current status" VerticalAlignment="Top" Background="{x:Null}" Foreground="Red" FontWeight="Bold" FontStyle="Italic" FontSize="14" BorderBrush="{x:Null}"/>
-        <TextBlock x:Name="TBStatus" Grid.ColumnSpan="2" Margin="35,213,22,0" TextWrapping="Wrap" Text="Not running" VerticalAlignment="Top" Height="50" Foreground="Blue"/>
         <TextBlock x:Name="TBVersion" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="0,0,8,6" TextWrapping="Wrap" Text="Version 1.0.0.0" VerticalAlignment="Bottom" Foreground="#FF8B8B8B" FontSize="8"/>
         <TextBlock Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="24,60,0,0" TextWrapping="Wrap" Text="Your e-mail/password are managed only from website, only the encrypted data will be copied." VerticalAlignment="Top"/>
+        <TextBox x:Name="TBoxStatus" Grid.ColumnSpan="2" Height="52" Margin="35,211,10,0" TextWrapping="Wrap" VerticalAlignment="Top" AcceptsReturn="True" VerticalScrollBarVisibility="Visible" IsReadOnly="True" Foreground="Blue" Background="{x:Null}">
+            <FrameworkElement.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Command="ApplicationCommands.Cut" />
+                    <MenuItem Command="ApplicationCommands.Copy" />
+                    <MenuItem Command="ApplicationCommands.Paste" />
+                    <Separator />
+                    <MenuItem Command="ApplicationCommands.SelectAll" />
+                </ContextMenu>
+            </FrameworkElement.ContextMenu>
+        </TextBox>
     </Grid>
 </Window>

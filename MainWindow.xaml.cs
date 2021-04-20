@@ -94,6 +94,7 @@ namespace NFAuthenticationKey
 
             BtnCancel.IsEnabled = true;
             BtnStart.IsEnabled = false;
+            TBoxStatus.Text = "";
             operationsThread = new Thread(new ThreadStart(Operations));
             operationsThread.Start();
         }
@@ -230,7 +231,9 @@ namespace NFAuthenticationKey
         {
             Dispatcher.BeginInvoke(new Action(() =>
             {
-                TBStatus.Text = text;
+                string newText = TBoxStatus.Text.Replace("->", "* ");
+                TBoxStatus.Text = newText + (newText.Length > 0 ? Environment.NewLine : "") + "-> " + text;
+                TBoxStatus.ScrollToEnd();
             }), DispatcherPriority.Background);
         }
 
