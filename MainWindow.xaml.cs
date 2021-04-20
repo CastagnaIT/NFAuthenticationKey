@@ -215,7 +215,8 @@ namespace NFAuthenticationKey
             }
             catch (Exception exc)
             {
-                UpdateStatus(exc.Message + Environment.NewLine + Environment.NewLine + exc.ToString());
+                // NOTE: the stacktrace info output the error line number only if the .pdb file is included
+                UpdateStatus("Error: " + exc.Message + Environment.NewLine + Environment.NewLine + exc.ToString() + Environment.NewLine + exc.StackTrace);
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
                     BtnCancel.IsEnabled = false;
