@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("NFAuthenticationKey")]
-[assembly: AssemblyCopyright("2020 Stefano Gottardo")]
+[assembly: AssemblyCopyright("2021 Stefano Gottardo")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
