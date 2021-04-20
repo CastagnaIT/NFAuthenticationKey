@@ -9,6 +9,7 @@ import json
 import os
 import platform
 import random
+import re
 import shutil
 import socket
 import subprocess
@@ -96,8 +97,18 @@ class Main(object):
         # Verify that falcorCache data exist, this data exist only when logged
         show_msg('Verification of data in progress... please wait')
         html_page = self.ws_request('Runtime.evaluate', {'expression': 'document.documentElement.outerHTML'})['result']['value']
-        if 'falcorCache' not in html_page:
-            raise Warning('Possible wrong login or unexpected problem, please try again.')
+        react_context = extract_json(html_page, 'reactContext')
+        if react_context is None:
+            # An error is happened in the reactContext extraction? try go on
+            show_msg('Error failed to check account membership status, try a simple check', TextFormat.COL_LIGHT_RED)
+            if 'falcorCache' not in html_page:
+                raise Warning('Error unable to find falcorCache data.')
+        else:
+            # Check the membership status
+            membership_status = react_context['models']['userInfo']['data']['membershipStatus']
+            if membership_status != 'CURRENT_MEMBER':
+                show_msg('The account membership status is: ' + membership_status, TextFormat.COL_LIGHT_RED)
+                raise Warning('Your login can not be used. The possible causes are account not confirmed/renewed/reactivacted.')
 
         self.ws_wait_event('Page.loadEventFired')  # Wait loading page (window.onload event)
 
@@ -245,6 +256,23 @@ def assert_cookies(cookies):
     for cookie_name in login_cookies:
         if not any(cookie['name'] == cookie_name for cookie in cookies):
             raise Warning('Not found cookies')
+
+
+def extract_json(content, var_name):
+    try:
+        pattern = r'netflix\.{}\s*=\s*(.*?);\s*</script>'
+        json_array = re.findall(pattern.format(var_name), content, re.DOTALL)
+        json_str = json_array[0]
+        json_str_replace = json_str.replace(r'\"', r'\\"')  # Escape \"
+        json_str_replace = json_str_replace.replace(r'\s', r'\\s')  # Escape whitespace
+        json_str_replace = json_str_replace.replace(r'\r', r'\\r')  # Escape return
+        json_str_replace = json_str_replace.replace(r'\n', r'\\n')  # Escape line feed
+        json_str_replace = json_str_replace.replace(r'\t', r'\\t')  # Escape tab
+        json_str_replace = json_str_replace.encode().decode('unicode_escape')  # Decode the string as unicode
+        json_str_replace = re.sub(r'\\(?!["])', r'\\\\', json_str_replace)  # Escape backslash (only when is not followed by double quotation marks \")
+        return json.loads(json_str_replace)
+    except Exception as exc:
+        return None
 
 
 def save_data(data, pin):
