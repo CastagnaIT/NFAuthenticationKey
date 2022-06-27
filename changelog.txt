@@ -1,3 +1,7 @@
+v1.2.1.0
+- Compiled for .NET 4.8
+- Add Chrome executable check on non-x86 path
+
 v1.2.0.0
 - Add check for account membership status
 - The "Current status" is now a text control to better check problems
