@@ -194,6 +194,7 @@ namespace NFAuthenticationKey
                     jsonString = jsonString.Replace(@"\r", @"\\r"); // Escape return
                     jsonString = jsonString.Replace(@"\n", @"\\n"); // Escape line feed
                     jsonString = jsonString.Replace(@"\t", @"\\t"); // Escape tab
+                    jsonString = jsonString.Replace(@"\p", @"/p"); // Unicode property not supported, we change slash to avoid unescape it
 
                     jsonString = Regex.Unescape(jsonString); // Unescape unicode string
 
