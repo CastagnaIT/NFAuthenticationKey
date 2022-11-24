@@ -215,7 +215,7 @@ class TextFormat:
 
 
 def open_browser(browser_temp_path):
-    params = ['-incognito',
+    params = ['--incognito',
               '--user-data-dir={}'.format(browser_temp_path),
               '--remote-debugging-port={}'.format(DEBUG_PORT),
               '--no-first-run',
