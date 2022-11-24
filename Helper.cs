@@ -151,7 +151,7 @@ namespace NFAuthenticationKey
             if (cookies.Count == 0)
                 throw new NFAuthException("Not found cookies");
 
-            List<string> loginCookies = new List<string> { "memclid", "nfvdid", "SecureNetflixId", "NetflixId" };
+            List<string> loginCookies = new List<string> { "nfvdid", "SecureNetflixId", "NetflixId" };
             foreach (string cookieName in loginCookies)
             {
                 if (cookies.Children<JObject>().FirstOrDefault(o => o["name"].ToString() == cookieName) == null)
