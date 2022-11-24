@@ -1,3 +1,9 @@
+v1.1.5 (2022-11-24)
+- Fixed cookies not found error
+- Fixed account membership status check
+- Fixed possible problem for incognito mode
+- Removed support to Brave browser (unsolved Remote Debugging connection)
+
 v1.1.4 (2021-04-20)
 - Add check for account membership status
 
