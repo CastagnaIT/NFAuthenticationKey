@@ -233,13 +233,17 @@ def get_browser_path():
     """Check and return the name of the installed browser"""
     if '*' not in BROWSER_PATH:
         return BROWSER_PATH
+    # The Brave browser support has been removed because they have changed something
+    # on the Remote Debugging feature and i have not found a way to fix it.
     if IS_MACOS:
-        for browser_name in ['Google Chrome', 'Chromium', 'Brave Browser']:
+        # for browser_name in ['Google Chrome', 'Chromium', 'Brave Browser']:
+        for browser_name in ['Google Chrome', 'Chromium']:
             path = '/Applications/' + browser_name + '.app/Contents/MacOS/' + browser_name
             if os.path.exists(path):
                 return path
     else:
-        for browser_name in ['google-chrome', 'google-chrome-stable', 'google-chrome-unstable', 'chromium', 'chromium-browser', 'brave-browser']:
+        # for browser_name in ['google-chrome', 'google-chrome-stable', 'google-chrome-unstable', 'chromium', 'chromium-browser', 'brave-browser', 'brave']:
+        for browser_name in ['google-chrome', 'google-chrome-stable', 'google-chrome-unstable', 'chromium', 'chromium-browser']:
             try:
                 path = subprocess.check_output(['which', browser_name]).decode('utf-8').strip()
                 if path:
