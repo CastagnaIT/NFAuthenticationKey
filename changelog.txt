@@ -1,3 +1,8 @@
+v1.2.2.0
+- Fixed cookies not found error
+- Fixed account membership status check
+- Fixed possible problem for incognito mode
+
 v1.2.1.0
 - Compiled for .NET 4.8
 - Add Chrome executable check on non-x86 path
