@@ -183,7 +183,7 @@ namespace NFAuthenticationKey
         {
             try
             {
-                string pattern = @"netflix\.{}\s*=\s*(.*?);\s*</script>";
+                string pattern = @"netflix\.{}\s*=\s*(.*?);\s*<\/script>";
                 var match = Regex.Match(content, pattern.Replace("{}", varName));
                 if (match.Success)
                 {
