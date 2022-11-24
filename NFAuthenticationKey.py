@@ -252,7 +252,7 @@ def get_browser_path():
 def assert_cookies(cookies):
     if not cookies:
         raise Warning('Not found cookies')
-    login_cookies = ['memclid', 'nfvdid', 'SecureNetflixId', 'NetflixId']
+    login_cookies = ['nfvdid', 'SecureNetflixId', 'NetflixId']
     for cookie_name in login_cookies:
         if not any(cookie['name'] == cookie_name for cookie in cookies):
             raise Warning('Not found cookies')
