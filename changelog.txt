@@ -1,3 +1,7 @@
+v1.2.2.2
+- Add support to Brave browser
+- Check for possible malformed settings.json (cause null reference exception at startup)
+
 v1.2.2.1
 - Security fix for Chrome 111
 
