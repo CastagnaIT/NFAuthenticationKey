@@ -22,81 +22,70 @@ namespace NFAuthenticationKey
     {
         public static string url = "";
         public static string localhostAddress = "";
-        public static string chromeExePath = "";
-        public static int chromeDebugPort = 9222;
+        public static string browserExeName = ""; // executable name without extension
+        public static string browserExePath = "";
+        public static int browserDebugPort = 9222;
         public static string outputFileName = "NFAuthentication.key";
 
 
-        public static string GetChromeExePath(string chromeCustomPath)
+        public static string GetBrowserExePath(string browserName, string partialPath)
         {
-            string path;
-
-            if (chromeCustomPath.Contains("*"))
-                chromeCustomPath = null;
-
-            if (chromeCustomPath != null)
+            // First try to get the browser path by check for browser process name
+            Process[] browserProcesses = Process.GetProcessesByName(browserName);
+            if (browserProcesses.Length > 0)
             {
-                path = chromeCustomPath;
-                if (File.Exists(path) == false)
-                    throw new NFAuthException("The Chrome browser executable path in the settings.json is wrong");
+                return browserProcesses[0].MainModule.FileName;
             }
             else
             {
-                // First try to get the Chrome path by reading a Chrome process
-                Process[] ChromeProcesses = Process.GetProcessesByName("chrome");
-                if (ChromeProcesses.Length > 0)
-                {
-                    path = ChromeProcesses[0].MainModule.FileName;
-                }
-                else
-                {
-                    // Try use the default path
-                    path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Google\Chrome\Application\chrome.exe");
-                    if (File.Exists(path) == false)
-                        path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), @"Google\Chrome\Application\chrome.exe");
-                }
-                if (File.Exists(path) == false)
-                    throw new NFAuthException("The Chrome browser executable path has not been found.\r\nPlease specify it manually in the settings.json");
+                // Try check the default paths
+                string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), partialPath);
+                if (File.Exists(path))
+                    return path;
+
+                path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), partialPath);
+                if (File.Exists(path))
+                    return path;
             }
-            return path;
+            return null;
         }
 
-        public static int OpenChromeInstance()
+        public static int OpenBrowserInstance()
         {
-            using (Process chromeProcess = new Process())
+            using (Process browserProcess = new Process())
             {
-                // Start Chrome in incognito mode, to exclude custom extensions and to avoid malicious users
-                chromeProcess.StartInfo.UseShellExecute = false;
-                chromeProcess.StartInfo.FileName = chromeExePath;
+                // Start the browser in incognito mode, to exclude custom extensions and to avoid malicious users
+                browserProcess.StartInfo.UseShellExecute = false;
+                browserProcess.StartInfo.FileName = browserExePath;
                 string userDataPath = Path.Combine(Directory.GetCurrentDirectory(), "BrowserTempData");
                 string htmlMessageFilePath = Path.Combine(Directory.GetCurrentDirectory(), "WaitingMessage.html");
-                chromeProcess.StartInfo.Arguments = String.Format("\"{0}\" --incognito --user-data-dir=\"{1}\" --remote-debugging-port={2} --remote-allow-origins=* --no-first-run --no-default-browser-check", htmlMessageFilePath, userDataPath, chromeDebugPort);
-                chromeProcess.Start();
-                return chromeProcess.Id;
+                browserProcess.StartInfo.Arguments = String.Format("\"{0}\" --incognito --user-data-dir=\"{1}\" --remote-debugging-port={2} --remote-allow-origins=* --no-first-run --no-default-browser-check", htmlMessageFilePath, userDataPath, browserDebugPort);
+                browserProcess.Start();
+                return browserProcess.Id;
             }
         }
 
-        public static bool IsChromeOpened()
+        public static bool IsBrowserOpened()
         {
-            return IsChromeOpened(false);
+            return IsBrowserOpened(false);
         }
 
-        public static bool IsChromeOpened(bool checkOnlyWithWindows)
+        public static bool IsBrowserOpened(bool checkOnlyWithWindows)
         {
             if (checkOnlyWithWindows)
             {
-                Process[] processes = Process.GetProcessesByName("chrome");
+                Process[] processes = Process.GetProcessesByName(browserExeName);
                 return processes.Count(process => string.IsNullOrEmpty(process.MainWindowTitle) == false) > 0;
             }
             else
             {
-                return Process.GetProcessesByName("chrome").Length > 0;
+                return Process.GetProcessesByName(browserExeName).Length > 0;
             }
         }
 
-        public static bool TerminateAllChromeInstances()
+        public static bool TerminateAllBrowserInstances()
         {
-            Process[] processes = Process.GetProcessesByName("chrome");
+            Process[] processes = Process.GetProcessesByName(browserExeName);
             foreach (Process process in processes)
             {
                 try
@@ -105,14 +94,14 @@ namespace NFAuthenticationKey
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Error killing Chrome process with pid {0}: {1}", process.Id, e);
+                    Console.WriteLine("Error killing browser process with pid {0}: {1}", process.Id, e);
                 }
 
             }
             return processes.Length > 0;
         }
 
-        public static void TerminateChromeInstance(int pid)
+        public static void TerminateBrowserInstance(int pid)
         {
             if (pid <= 0)
                 return;
@@ -122,7 +111,7 @@ namespace NFAuthenticationKey
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error killing Chrome process with pid {0}: {1}", pid, e);
+                Console.WriteLine("Error killing browser process with pid {0}: {1}", pid, e);
             }
         }
 

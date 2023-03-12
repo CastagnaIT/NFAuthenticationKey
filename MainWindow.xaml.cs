@@ -39,17 +39,44 @@ namespace NFAuthenticationKey
             {
                 JObject settings = JObject.Parse(File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "settings.json")));
 
-                Helper.chromeExePath = Helper.GetChromeExePath(settings["chromeExePath"].ToString());
+                if (!settings.ContainsKey("url") || !settings.ContainsKey("localhostAddress") ||
+                    !settings.ContainsKey("browserExePath") || !settings.ContainsKey("browserDebugPort"))
+                {
+                    MessageBox.Show(this, "Missing data in the settings.json file, detete it and restart the software to create a new file.", this.Title);
+                    Close();
+                    return;
+                }
+
+                // Determine browser executable path
+                string browserCustomPath = settings["browserExePath"].ToString();
+                if (!browserCustomPath.Contains("*"))
+                {
+                    if (File.Exists(browserCustomPath) == false)
+                        throw new NFAuthException("Wrong browser executable path in the settings.json");
+                    Helper.browserExePath = browserCustomPath;
+                }
+                else
+                {
+                    // Check for a compatible installed browser
+                    string path = Helper.GetBrowserExePath("chrome", @"Google\Chrome\Application\chrome.exe");
+                    if (String.IsNullOrEmpty(path))
+                        path = Helper.GetBrowserExePath("brave", @"BraveSoftware\Brave-Browser\Application\brave.exe");
+                    if (String.IsNullOrEmpty(path))
+                        throw new NFAuthException("Browser executable not found. Please specify it manually in the settings.json.\r\nCompatible browsers: Google Chrome, Brave browser.");
+                    Helper.browserExePath = path;
+                }
+                Helper.browserExeName = Path.GetFileNameWithoutExtension(Helper.browserExePath);
+                UpdateStatus("Browser found: " + Helper.browserExeName);
                 Helper.url = settings["url"].ToString();
                 Helper.localhostAddress = settings["localhostAddress"].ToString();
-                Helper.chromeDebugPort = settings["chromeDebugPort"].ToObject<int>();
+                Helper.browserDebugPort = settings["browserDebugPort"].ToObject<int>();
             }
             catch (Newtonsoft.Json.JsonReaderException exc)
             {
-                if (exc.Message.Contains("escape sequence") && exc.Message.Contains("chromeExePath")) {
+                if (exc.Message.Contains("escape sequence") && exc.Message.Contains("browserExePath")) {
                     MessageBox.Show(this,
-                        "The path set to chromeExePath property in the settings.json file has not been formatted correctly." + Environment.NewLine +
-                        "It must be formatted as the following example:" + Environment.NewLine +
+                        "The path set to browserExePath property in the settings.json file has not been formatted correctly." + Environment.NewLine +
+                        "It must be formatted as JSON format, following example:" + Environment.NewLine +
                         "C:\\\\mypath\\\\chrome.exe",
                         this.Title);
                     Close();
@@ -74,21 +101,21 @@ namespace NFAuthenticationKey
 
         private void BtnStart_Click(object sender, RoutedEventArgs e)
         {
-            // Ask to user to close all Chrome windows
-            if (Helper.IsChromeOpened(true))
+            // Ask to user to close all browser windows
+            if (Helper.IsBrowserOpened(true))
             {
-                MessageBox.Show(this, "Please close all Chrome windows opened", this.Title);
+                MessageBox.Show(this, "Please close all browser windows opened", this.Title);
                 return;
             }
 
-            // Try close all Chrome opened in background, they can cause problems with our Chrome dev instance
-            if (Helper.TerminateAllChromeInstances())
+            // Try close all browser opened in background, they can cause problems with our browser dev instance
+            if (Helper.TerminateAllBrowserInstances())
                 Thread.Sleep(500);  // Give so time to the system
 
-            // Not always we have the permission to terminate all Chrome instances, so check it
-            if (Helper.IsChromeOpened())
+            // Not always we have the permission to terminate all browser instances, so check it
+            if (Helper.IsBrowserOpened())
             {
-                MessageBox.Show(this, "There are some Chrome processes opened.\r\nCheck with the Task Manager and close them all", this.Title);
+                MessageBox.Show(this, "There are some browser processes opened.\r\nCheck with the Task Manager and close them all", this.Title);
                 return;
             }
 
@@ -114,19 +141,19 @@ namespace NFAuthenticationKey
 
         public void Operations()
         {
-            int chromePid = -1;
+            int browserPid = -1;
             try
             {
                 WebSocketHelper.msgId = 0;
 
-                // Open a Chrome dev instance in incognito mode
-                UpdateStatus("Chrome startup... please wait");
-                chromePid = Helper.OpenChromeInstance();
+                // Open a browser dev instance in incognito mode
+                UpdateStatus("Browser startup... please wait");
+                browserPid = Helper.OpenBrowserInstance();
 
-                // Wait for chrome opening and remote debugging service start-up
-                UpdateStatus("Establish connection with Chrome... please wait");
+                // Wait for browser opening and remote debugging service start-up
+                UpdateStatus("Establish connection with the browser... please wait");
                 if (WebSocketHelper.WaitForPortOpened() == false)
-                    throw new NFAuthException(string.Format("Unable communicate with Chrome debug address {0}:{1}", Helper.localhostAddress, Helper.chromeDebugPort));
+                    throw new NFAuthException(string.Format("Unable communicate with browser debug address {0}:{1}", Helper.localhostAddress, Helper.browserDebugPort));
 
                 // Get endpoint of our page
                 WebSocketHelper.ExtractDebugEndpoint();
@@ -219,7 +246,7 @@ namespace NFAuthenticationKey
             }
             catch (ThreadAbortException)
             {
-                Helper.TerminateChromeInstance(chromePid);
+                Helper.TerminateBrowserInstance(browserPid);
             }
             catch (NFAuthException exc)
             {
@@ -231,7 +258,7 @@ namespace NFAuthenticationKey
                     MessageBox.Show(this, exc.Message, this.Title);
                 }), DispatcherPriority.Background);
 
-                Helper.TerminateChromeInstance(chromePid);
+                Helper.TerminateBrowserInstance(browserPid);
             }
             catch (Exception exc)
             {
@@ -244,7 +271,7 @@ namespace NFAuthenticationKey
                     MessageBox.Show(this, exc.Message, this.Title);
                 }), DispatcherPriority.Background);
 
-                Helper.TerminateChromeInstance(chromePid);
+                Helper.TerminateBrowserInstance(browserPid);
             }
             finally
             {
@@ -275,6 +302,5 @@ namespace NFAuthenticationKey
                 }
             }
         }
-
     }
 }

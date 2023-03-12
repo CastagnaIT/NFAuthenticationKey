@@ -1,6 +1,6 @@
 ﻿{
   "url": "https://www.netflix.com/login",
   "localhostAddress": "localhost",
-  "chromeDebugPort": 9222,
-  "chromeExePath": "* Remove me and specify here the browser path with .exe extension, only if not recognized (e.g. C:\\mypath\\chrome.exe) *"
+  "browserDebugPort": 9222,
+  "browserExePath": "* Remove me and specify here the browser path with .exe extension, only if not recognized (e.g. C:\\mypath\\chrome.exe) *"
 }

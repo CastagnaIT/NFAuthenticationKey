@@ -31,7 +31,7 @@ namespace NFAuthenticationKey
         }
         private static List<DataResult> dataResults = new List<DataResult>();
 
-        public static string chromeDebugEndpoint = "";
+        public static string browserDebugEndpoint = "";
         private static int _msgId = 0;
         public static int msgId { get
             {
@@ -47,7 +47,7 @@ namespace NFAuthenticationKey
             WSopenedEvent = new ManualResetEvent(false);
             WSclosedEvent = new ManualResetEvent(false);
 
-            websocket = new WebSocket(chromeDebugEndpoint);
+            websocket = new WebSocket(browserDebugEndpoint);
             websocket.MessageReceived += Websocket_MessageReceived;
             websocket.Opened += Websocket_Opened;
             websocket.Closed += Websocket_Closed;
@@ -171,8 +171,8 @@ namespace NFAuthenticationKey
         {
             try
             {
-                chromeDebugEndpoint = "";
-                HttpWebRequest webReq = (HttpWebRequest)WebRequest.Create(string.Format("http://{0}:{1}/json", Helper.localhostAddress, Helper.chromeDebugPort));
+                browserDebugEndpoint = "";
+                HttpWebRequest webReq = (HttpWebRequest)WebRequest.Create(string.Format("http://{0}:{1}/json", Helper.localhostAddress, Helper.browserDebugPort));
                 var responseStream = webReq.GetResponse().GetResponseStream();
                 StreamReader sr = new StreamReader(responseStream);
                 var response = sr.ReadToEnd();
@@ -183,14 +183,14 @@ namespace NFAuthenticationKey
                     // Find our session page
                     if (item["type"].ToString() == "page" && item["url"].ToString().Contains("WaitingMessage.html"))
                     {
-                        chromeDebugEndpoint = item["webSocketDebuggerUrl"].ToString();
-                        Debug.WriteLine("CHROME SESSION: " + item.ToString());
+                        browserDebugEndpoint = item["webSocketDebuggerUrl"].ToString();
+                        Debug.WriteLine("BROWSER SESSION: " + item.ToString());
                         break;
                     }
                 }
 
-                if (chromeDebugEndpoint == "")
-                    throw new NFAuthException("Chrome session page not found");
+                if (browserDebugEndpoint == "")
+                    throw new NFAuthException("Browser session page not found");
             }
             catch (Exception)
             {
@@ -209,7 +209,7 @@ namespace NFAuthenticationKey
                     try
                     {
                         string localhost = Helper.localhostAddress == "localhost" ? "127.0.0.1" : Helper.localhostAddress;
-                        tcpClient.Connect(localhost, Helper.chromeDebugPort);
+                        tcpClient.Connect(localhost, Helper.browserDebugPort);
                         return true;
                     }
                     catch (Exception)
