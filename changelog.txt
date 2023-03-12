@@ -1,3 +1,6 @@
+v1.2.2.1
+- Security fix for Chrome 111
+
 v1.2.2.0
 - Fixed cookies not found error
 - Fixed account membership status check
